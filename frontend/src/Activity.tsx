@@ -147,7 +147,7 @@ function Activity() {
             lat: record[latLngIndex][0],
             lon: record[latLngIndex][1],
             ele: record[elevationIndex],
-            time: new Date(record[timeIndex]),
+            time: new Date(1000 * record[timeIndex]),
           })))
         }})
       .catch(e => {
