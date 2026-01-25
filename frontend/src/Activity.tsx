@@ -11,13 +11,14 @@ import { useHotkeys } from "react-hotkeys-hook"
 import { Key } from "ts-key-enum"
 import GpxParser, { Point } from "gpxparser"
 import ElevChart from "./components/ElevChart"
+import FitParser from "fit-file-parser"
 
 function Activity() {
   //const { setHeaderChildren } = useContext(
   //  HeaderChildrenState,
   //) as HeaderChildrenContextType
   const [activity, setActivity] = useState({} as Record<string, string>)
-  const [gpxBody, setGpxBody] = useState("")
+  const [routePoints, setRoutePoints] = useState<Point[]|undefined>(undefined)
   const [loading, setLoading] = useState(true)
   const [currPhotoIdx, setCurrPhotoIdx] = useState(null as number | null)
   const [error, setError] = useState(false)
@@ -112,10 +113,43 @@ function Activity() {
     // Now get GPX
     setLoading(true)
     fetch(`/activities/${activity["Filename"].split("/")[1]}`)
-      .then(res => res.text())
-      .then(data => {
-        setGpxBody(data)
-      })
+      .then(res => res.bytes())
+      .then(bytes => {
+        if (activity["Filename"].endsWith(".gpx")) {
+          const text = new TextDecoder().decode(bytes)
+          const gpxParser = new GpxParser()
+          gpxParser.parse(text)
+          if (gpxParser.tracks && gpxParser.tracks[0]) {
+            setRoutePoints(gpxParser.tracks[0].points)
+          }
+        } else if (activity["Filename"].endsWith(".fit.gz")) {
+          const fitParser = new FitParser()
+          fitParser.parse(bytes, (error, data) => {
+            if (error) {
+              throw error
+            }
+            setRoutePoints(data?.records?.map((record) => ({
+              lat: record.position_lat || 0,
+              lon: record.position_long || 0,
+              ele: record.enhanced_altitude || record.altitude || 0,
+              time: new Date(record.timestamp)
+            })))
+          })
+        } else if (activity["Filename"].endsWith(".json")) {
+          const text = new TextDecoder().decode(bytes)
+          const json = JSON.parse(text)
+          const data = json.data[0]
+          const timeIndex = data.fields.indexOf("time")
+          const latLngIndex = data.fields.indexOf("latlng")
+          const elevationIndex = data.fields.indexOf("elevation")
+
+          setRoutePoints(data.values.map((record: any) => ({
+            lat: record[latLngIndex][0],
+            lon: record[latLngIndex][1],
+            ele: record[elevationIndex],
+            time: new Date(record[timeIndex]),
+          })))
+        }})
       .catch(e => {
         console.error("GPX ERROR", e)
         setError(true)
@@ -145,12 +179,6 @@ function Activity() {
     calorieStr = calories.toLocaleString()
   }
 
-  let routePoints = [{ lat: 0, lon: 0, ele: 0, time: new Date() } as Point]
-  const gpxParser = new GpxParser()
-  gpxParser.parse(gpxBody)
-  if (gpxParser.tracks && gpxParser.tracks[0]) {
-    routePoints = gpxParser.tracks[0].points
-  }
   //console.log("POINTS=", routePoints.length)
 
   return (
@@ -158,7 +186,7 @@ function Activity() {
       <SetHeader />
       <div className="flex flex-1 flex-col flex-shrink lg:flex-row">
         <div className="h-[50vh] lg:h-[calc(100vh-4.5rem)] lg:w-[calc(100vw-30rem)]">
-          {gpxBody && <MapGl routePoints={routePoints} />}
+          {routePoints?.length && <MapGl routePoints={routePoints} />}
         </div>
         <div className="pt-4 lg:pt-12 pl-4 pr-4 lg:h-[calc(100vh-4.5rem)] lg:overflow-auto mx-auto lg:w-[30rem]">
           <h1 className="text-center pb-2">{activity["Activity Name"]}</h1>
@@ -203,7 +231,7 @@ function Activity() {
             {activity["Activity Description"]}
           </p>
           <div className="pb-12 w-[100%]">
-            <ElevChart routePoints={routePoints} />
+            {routePoints?.length && <ElevChart routePoints={routePoints} />}
           </div>
           {media && (
             <div className="grid content-center pt-8 pb-12 lg:pb-4 grid-cols-3 gap-2">
