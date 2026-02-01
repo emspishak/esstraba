@@ -68,5 +68,6 @@
     "eslint-plugin-prettier": "^5.0.0",
     "postcss": "^8.4.31",
     "tailwindcss": "^3.3.3"
-  }
+  },
+  "homepage": "/strava"
 }

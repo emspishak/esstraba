@@ -84,8 +84,8 @@ function App() {
           <Header />
           <BrowserRouter>
             <Routes>
-              <Route path="/" element={<ActivityList />} />
-              <Route path="/activity/:activityId" element={<Activity />} />
+              <Route path="/strava/" element={<ActivityList />} />
+              <Route path="/strava/activity/:activityId" element={<Activity />} />
             </Routes>
           </BrowserRouter>
           <Footer />
