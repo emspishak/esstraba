@@ -1,3 +1,0 @@
-AuthType Basic
-AuthName "Strava"
-require valid-user
