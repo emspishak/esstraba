@@ -157,7 +157,7 @@ function MapGL({ routePoints }: MapProps) {
       </div>
       <Map
         ref={mapRef}
-        mapboxAccessToken="pk.eyJ1IjoienN0ZWlua2FtcCIsImEiOiJjbG5henR0NGEwMmU3Mm1saWU0YzF0MzM1In0.INYw6WGQM_ST1QZL_PcTtg"
+        mapboxAccessToken="pk.eyJ1IjoiZXJpYzA1OSIsImEiOiJjbWw0Y253bGQweXg2M2RxNHdla3h2cG54In0.CKZKWmcliXgocfNrZ-WrLg"
         initialViewState={{
           longitude: avgLon,
           latitude: avgLat,
