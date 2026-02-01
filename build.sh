@@ -4,11 +4,9 @@ set -e
 REPO="$HOME/files/esstraba"
 
 cd "$REPO/frontend"
-WEB="$HOME/web/strava"
-rm -r "$WEB"
-mkdir "$WEB"
-
-cp -a "build/." "$WEB/"
+npm ci
+npm run build
 
 cd "$REPO/backend"
-npm run serve
+npm ci
+npm run build
