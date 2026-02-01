@@ -11,9 +11,9 @@ export const show = async (req: Request, res: Response): Promise<void> => {
   }
 
   const stream = req.path.match(/\.gz$/) ?
-    fs.createReadStream(`/app/data${req.path}`).pipe(zlib.createGunzip())
+    fs.createReadStream(`data${req.path}`).pipe(zlib.createGunzip())
     :
-    fs.createReadStream(`/app/data${req.path}`)
+    fs.createReadStream(`data${req.path}`)
 
   res.header('content-type', 'application/gpx+xml')
   res.header('content-disposition', `attachment; filename="${req.path.split('/')[0].replace(/\.gz$/, '')}"`)

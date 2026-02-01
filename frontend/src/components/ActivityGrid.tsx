@@ -111,7 +111,7 @@ const ActivityGrid = ({ activities }: ActivityGridProps) => {
         <Link
           key={`l${rowIdx}`}
           className="contents dataRow"
-          to={`/activity/${row["Activity ID"]}`}
+          to={`activity/${row["Activity ID"]}`}
         >
           {columns
             .map((col, colIdx) => {

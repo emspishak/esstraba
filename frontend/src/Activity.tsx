@@ -27,7 +27,7 @@ function Activity() {
 
   useEffect(() => {
     setLoading(true)
-    fetch(`/api/activity/${activityId}`)
+    fetch(`/strava/api/activity/${activityId}`)
       .then(res => res.json())
       .then(data => {
         setActivity(data.activity)
@@ -87,7 +87,7 @@ function Activity() {
         mediaFname && (
           <div key={mediaFname}>
             <img
-              src={`/${mediaFname}`}
+              src={`/strava/${mediaFname}`}
               alt="title"
               onClick={() => setCurrPhotoIdx(idx)}
               className="aspect-square object-cover rounded cursor-pointer"
@@ -112,7 +112,7 @@ function Activity() {
     }
     // Now get GPX
     setLoading(true)
-    fetch(`/activities/${activity["Filename"].split("/")[1]}`)
+    fetch(`/strava/activities/${activity["Filename"].split("/")[1]}`)
       .then(res => res.bytes())
       .then(bytes => {
         if (activity["Filename"].endsWith(".gpx")) {
@@ -224,7 +224,7 @@ function Activity() {
             </p>
             <p className="activityDataLabel">Download:</p>
             <p className="activityDataValue value">
-              <a href={`/${activity["Filename"]}`}>GPX</a>
+              <a href={`/strava/${activity["Filename"]}`}>GPX</a>
             </p>
           </div>
           <p className="m-auto pl-2 pr-2 pt-8 pb-4 text-sm leading-6 max-w-[30rem]">
@@ -249,7 +249,7 @@ function Activity() {
         >
           <div className="bg-black p-12 pb-4">
             <img
-              src={`/${mediaFnames[currPhotoIdx]}`}
+              src={`/strava/${mediaFnames[currPhotoIdx]}`}
               className="cursor-pointer object-contain max-w-[85vw] max-h-[85vh] drop-shadow-xl rounded-lg"
             />
             <div className="flex justify-between text-slate-600 pt-4 pl-4 pr-4 text-xs">

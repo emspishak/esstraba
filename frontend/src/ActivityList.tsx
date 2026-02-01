@@ -7,7 +7,7 @@ function ActivityList() {
   const [error, setError] = useState(null)
 
   useEffect(() => {
-    fetch("/api/activity")
+    fetch("api/activity")
       .then(res => res.json())
       .then(data => {
         setActivities(data.activities)
