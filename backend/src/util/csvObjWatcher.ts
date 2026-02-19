@@ -88,6 +88,14 @@ export class CsvObjWatcher {
     for await (const record of parser) {
       // Build an index of object ID (always the first column) to position in the array.
       this._byId[record[headers[0]]] = this._records.length
+      if (record['Media']) {
+        const media = record['Media'].split('|')
+        const groups = Object.groupBy(media, (f: string) =>
+          fs.existsSync(`data/${f}`) ? 'media' : 'missing',
+        )
+        record['Media'] = groups.media?.join('|')
+        record['MediaMissing'] = groups.missing?.join('|')
+      }
       this._records.push(record)
     }
     return this
